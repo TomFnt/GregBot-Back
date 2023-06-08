@@ -1,14 +1,12 @@
-const express = require('express');
-
-const router = express.Router();
-
-const dialogController= require('../../controller/v1/index')
+const express = require('express')
+const router = express.Router()
+const dialogController = require('../../controller/v1/index.js')
 
 /**
  * @swagger
  * /api/v1/:
  *  get:
- *    description: Home route
+ *    description: page d'accueil
  *    responses:
  *      '200':
  *        description: A successful response
@@ -17,44 +15,46 @@ router.get('/', dialogController.home)
 
 /**
  * @swagger
- * /api/v1/test:
+ * /api/v1/dialogs:
  *  get:
- *    description: Test route
+ *    description: méthode get question/answer
  *    responses:
  *      '200':
  *        description: A successful response
  */
-router.get('/test', dialogController.test)
+router.get('/dialogs', dialogController.dialogget)
 
 /**
  * @swagger
- * /api/v1/dialog/questions:
- *  get:
- *    description: Use to request all questions
+ * /api/v1/dialogs:
+ *  post:
+ *    description: méthode post question/answer
  *    responses:
  *      '200':
  *        description: A successful response
  */
-router.get('/dialog/question', dialogController.findAllQuestion)
+router.post('/dialogs', dialogController.dialogpost)
 
 /**
  * @swagger
- * /api/v1/dialog/answer/{id}:
- *  get:
- *    description: Use to find dialog by id
- *    parameters:
- *      - name: id
- *        in: path
- *        description: ID of the dialog
- *        required: true
- *        schema:
- *          type: integer
+ * /api/v1/dialogs:
+ *  delete:
+ *    description: méthode delete question/answer
  *    responses:
  *      '200':
  *        description: A successful response
- *      '404':
- *        description: Dialog not found
  */
-router.get('/dialog/answer/:id', dialogController.answer)
+router.delete('/dialogs', dialogController.dialogdelete)
 
-module.exports = router;
+/**
+ * @swagger
+ * /api/v1/dialogs:
+ *  put:
+ *    description: méthode put question/answer
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ */
+router.put('/dialogs', dialogController.dialogput)
+
+module.exports = router

@@ -1,25 +1,110 @@
-const dialogs = require("../../dialog.json");
-const dialogController ={
-    home :  (req, res) => {
-        res.send('Hello World !')
-    },
+const express = require("express")
+const app = express()
+const {Sequelize} = require("sequelize")
+const Chat = require("../../models/Chat")
 
-    test :  (req, res) => {
-        res.send('Hello Test !')
-    },
+app.use(express.json())
 
-    findAllQuestion: (req, res)=>
-    {
-        const questions = dialogs.map(({id, question}) => ({id, question}))
-        res.json(questions)
-    },
+const sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: '../../db/database.sqlite'
+});
 
-    answer: (req, res)=>{
-        const dialog = dialogs.find(dialog => dialog.id === parseInt(req.params.id))
-        console.log(req.params.id)
-        if(!dialog) return res.status(404).send()
-        res.json(dialog)
+;(async function connect(){
+    try {
+        await sequelize.authenticate();
+        console.log('Connection has been established successfully.');
+      } catch (error) {
+        console.error('Unable to connect to the database:', error);
+      }
+})()
+
+
+const dialogController = {
+    home: (req, res) => {
+        res.send('Hello World!')
+    },
+    dialogget: async (req, res) => {
+        const allchats = await Chat.findAll();
+    
+        res.status(200).json({
+            data: allchats
+        })
+    },
+    dialogpost: (req, res) => { 
+        const chat = Chat.build({ question: req.body.question, answer: req.body.answer});
+        (async function save(){
+            await chat.save();
+            console.log(chat);
+            console.log('Chat was saved to the database!');
+        })()
+        res.status(200).json({
+            message: "created"
+        })
+    },
+    dialogput: async (req,res) => {
+        const updatechat = Chat.update({ question: req.body.question, answer: req.body.answer}, {
+            where: {
+                id: req.body.id
+            }
+        });
+        res.status(200).json({
+            message: "updated"
+        })
+    },
+    dialogdelete: async (req,res) => {
+        const deletechat = await Chat.destroy({
+            where: {
+                id: req.body.id
+            }
+        });
+        console.log('Chat was deleted to the database!');
+        res.status(200).json({
+            message: "deleted"
+        })
     }
 }
 
+/*const dialogs = [
+   {
+        question: "salut",
+        answer: "coucou"
+    },
+    {
+        question: "ça va ?",
+        answer: "bien et toi ?"
+    },
+    {
+        question: "quel age as-tu ?",
+        answer: "22 ans"
+    },
+    {
+        question: "Quel temps fait-il ?",
+        answer: "Il pleut"
+    }
+]
+
+const dialogController = {
+    home: (req, res) => {
+        res.send('Hello World!')
+    },
+    dialogget: (req, res) => {
+        res.status(200).json({ message: dialogs })
+    },
+    dialogpost: (req, res) => { 
+        console.log(req.body.question)
+        let matchFound=false;
+        dialogs.forEach(dialog =>{
+            if(dialog.question === req.body.question){
+                matchFound = true;
+                res.status(200).json({Response : dialog.answer})
+                return
+            }
+        })
+        if(!matchFound){
+            res.status(200).json({message: "pas de réponse a vous apporter"})
+        }
+    }
+}
+*/ 
 module.exports = dialogController

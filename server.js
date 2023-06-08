@@ -1,8 +1,11 @@
 const express = require('express')
 const app = express()
 const port = 3000
+const path = require('path')
+const cors = require('cors')
 
-
+app.use(express.json())
+app.use(cors())
 // Swagger
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -28,11 +31,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api/v1', require('./routes/v1'))
 
 app.get('*', (req, res) => {
-    res.status(404).json({message: 'Not Found'})
+    res.sendFile(__dirname + "/view/404.html")
 })
 
-app.listen(port, ()=>{
-    console.log(`listening on port ${port}`) //Bonne pratique dans l'utilisation d'une API
-    //res.sendfile(__dirname + 'views/404.hmtl') //Si on fait une view
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
 })
 
